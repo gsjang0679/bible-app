@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
         testament: 'OT', // 'OT' or 'NT'
         darkMode: localStorage.getItem('darkMode') === 'true',
         fontSize: parseInt(localStorage.getItem('fontSize')) || 18,
-        longPressTimer: null
+        longPressTimer: null,
+        currentView: 'bible', // 'bible' or 'hymn'
+        hymnNumber: '',
+        wakeLock: null
     };
 
     // UI Elements
@@ -266,6 +269,148 @@ document.addEventListener('DOMContentLoaded', () => {
 
     navToggleBtn.addEventListener('click', () => {
         navDrawer.classList.toggle('collapsed');
+    });
+
+    // --- NEW: TAB SWITCHING LOGIC ---
+    const tabItems = document.querySelectorAll('.tab-item');
+    const bibleView = document.getElementById('bible-view');
+    const hymnView = document.getElementById('hymn-view');
+
+    tabItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const view = item.dataset.view;
+            if (state.currentView === view) return;
+
+            state.currentView = view;
+            tabItems.forEach(t => t.classList.remove('active'));
+            item.classList.add('active');
+
+            if (view === 'bible') {
+                bibleView.classList.add('active');
+                hymnView.classList.remove('active');
+            } else {
+                bibleView.classList.remove('active');
+                hymnView.classList.add('active');
+            }
+        });
+    });
+
+    // --- NEW: HYMN LOGIC ---
+    const hymnNumInput = document.getElementById('hymn-number-input');
+    const numBtns = document.querySelectorAll('.num-btn');
+    const hymnGoBtn = document.getElementById('hymn-go-btn');
+    const hymnReader = document.getElementById('hymn-reader');
+    const hymnSearchBox = document.querySelector('.hymn-search-box');
+    const hymnResults = document.getElementById('hymn-results');
+    const backToHymnSearch = document.getElementById('back-to-hymn-search');
+
+    numBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.classList.contains('reset')) {
+                state.hymnNumber = '';
+            } else if (btn.classList.contains('del')) {
+                state.hymnNumber = state.hymnNumber.slice(0, -1);
+            } else {
+                if (state.hymnNumber.length < 3) state.hymnNumber += btn.innerText;
+            }
+            hymnNumInput.value = state.hymnNumber;
+        });
+    });
+
+    const loadHymn = async (number) => {
+        try {
+            const response = await fetch(`/api/hymns/${number}`);
+            if (!response.ok) throw new Error('Hymn not found');
+            const hymn = await response.json();
+            displayHymn(hymn);
+        } catch (err) {
+            alert('해당 장의 찬송가가 없습니다.');
+        }
+    };
+
+    const displayHymn = (hymn) => {
+        document.getElementById('hymn-title').innerText = `${hymn.number}장. ${hymn.title}`;
+        document.getElementById('hymn-lyrics-text').innerText = hymn.lyrics;
+        document.getElementById('hymn-score-img').src = `/static/${hymn.images}`;
+        
+        hymnReader.classList.remove('hidden');
+        hymnSearchBox.classList.add('hidden');
+        hymnResults.classList.add('hidden');
+    };
+
+    hymnGoBtn.addEventListener('click', () => {
+        if (state.hymnNumber) loadHymn(state.hymnNumber);
+    });
+
+    backToHymnSearch.addEventListener('click', () => {
+        hymnReader.classList.add('hidden');
+        hymnSearchBox.classList.remove('hidden');
+    });
+
+    // Hymn Text Search
+    const hymnTextInput = document.getElementById('hymn-text-input');
+    const hymnSearchBtn = document.getElementById('hymn-search-btn');
+
+    const searchHymns = async () => {
+        const query = hymnTextInput.value.trim();
+        if (!query) return;
+        const response = await fetch(`/api/hymns?q=${encodeURIComponent(query)}`);
+        const results = await response.json();
+        renderHymnResults(results);
+    };
+
+    const renderHymnResults = (results) => {
+        hymnResults.innerHTML = '';
+        hymnResults.classList.remove('hidden');
+        if (results.length === 0) {
+            hymnResults.innerHTML = '<p>결과가 없습니다.</p>';
+            return;
+        }
+        results.forEach(h => {
+            const div = document.createElement('div');
+            div.className = 'result-item';
+            div.innerHTML = `<strong>${h.number}장. ${h.title}</strong><p>${h.lyrics.substring(0, 50)}...</p>`;
+            div.addEventListener('click', () => displayHymn(h));
+            hymnResults.appendChild(div);
+        });
+    };
+
+    hymnSearchBtn.addEventListener('click', searchHymns);
+
+    // Screen Wake Lock
+    const wakeLockBtn = document.getElementById('hymn-wake-lock');
+    wakeLockBtn.addEventListener('click', async () => {
+        if (!state.wakeLock) {
+            try {
+                state.wakeLock = await navigator.wakeLock.request('screen');
+                wakeLockBtn.style.color = '#eab308'; // Golden
+                alert('화면 켜짐 유지 활성화');
+            } catch (err) {
+                console.error(err);
+            }
+        } else {
+            state.wakeLock.release();
+            state.wakeLock = null;
+            wakeLockBtn.style.color = '#666';
+            alert('화면 켜짐 유지 비활성화');
+        }
+    });
+
+    // Split Layout Toggle
+    const toggleSplitBtn = document.getElementById('hymn-toggle-split');
+    const hymnContent = document.getElementById('hymn-content');
+    toggleSplitBtn.addEventListener('click', () => {
+        const scoreView = document.getElementById('hymn-score-view');
+        const lyricsView = document.getElementById('hymn-lyrics-view');
+        
+        if (scoreView.style.display === 'none') {
+            scoreView.style.display = 'flex';
+            lyricsView.style.display = 'flex';
+        } else {
+            // Simplified toggle: if visible, hide one for focus
+            // In a better impl, cycle states
+            scoreView.style.display = 'none';
+        }
     });
 
     // Init

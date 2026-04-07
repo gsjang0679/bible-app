@@ -24,49 +24,98 @@
                 <button id="searchBtn"><i class="fas fa-search"></i></button>
             </div>
             <div class="header-actions">
+                <a href="/static/hymn.html" id="hymnBtn" title="찬송가 보기" style="color: white; font-size: 20px; margin-right: 15px; text-decoration: none;"><i class="fas fa-music"></i></a>
                 <button id="bookmarkBtn"><i class="fas fa-bookmark"></i></button>
                 <button id="themeToggle"><i class="fas fa-moon"></i></button>
             </div>
         </header>
 
         <!-- Main Content Area -->
+        <!-- Main Content Area -->
         <main>
-            <!-- Navigation Drawer (Book/Chapter Selection) -->
-            <nav id="navDrawer" class="active">
-                <div class="nav-tabs">
-                    <button class="nav-tab active" data-tab="OT">구약</button>
-                    <button class="nav-tab" data-tab="NT">신약</button>
-                </div>
-                <div class="book-list" id="bookList">
-                    <!-- Books will be injected here -->
-                </div>
-                <div class="chapter-list hidden" id="chapterList">
-                    <button class="back-to-books"><i class="fas fa-chevron-left"></i> 목록으로</button>
-                    <h3 id="selectedBookName">창세기</h3>
-                    <div class="chapters-grid" id="chaptersGrid">
-                        <!-- Chapters will be injected here -->
+            <!-- Bible ViewContainer -->
+            <div id="bible-view" class="view-container active">
+                <nav id="navDrawer" class="active">
+                    <div class="nav-tabs">
+                        <button class="nav-tab active" data-tab="OT">구약</button>
+                        <button class="nav-tab" data-tab="NT">신약</button>
                     </div>
-                </div>
-            </nav>
+                    <div class="book-list" id="bookList"></div>
+                    <div class="chapter-list hidden" id="chapterList">
+                        <button class="back-to-books"><i class="fas fa-chevron-left"></i> 목록으로</button>
+                        <h3 id="selectedBookName">창세기</h3>
+                        <div class="chapters-grid" id="chaptersGrid"></div>
+                    </div>
+                </nav>
 
-            <!-- Verse Reader -->
-            <section id="reader">
-                <div id="readerHeader">
-                    <h2 id="currentLocation">반가워요! 성경을 선택해주세요.</h2>
-                    <div class="font-settings">
-                        <i class="fas fa-font"></i>
-                        <input type="range" id="fontSizeSlider" min="14" max="40" value="18">
+                <section id="reader">
+                    <div id="readerHeader">
+                        <h2 id="currentLocation">반가워요! 성경을 선택해주세요.</h2>
+                        <div class="font-settings">
+                            <i class="fas fa-font"></i>
+                            <input type="range" id="fontSizeSlider" min="14" max="40" value="18">
+                        </div>
+                    </div>
+                    <div id="versesContainer">
+                        <div class="welcome-screen">
+                            <i class="fas fa-hands-praying"></i>
+                            <p>원하시는 성경 구절을 선택하여 읽어보세요.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Hymn View Container -->
+            <div id="hymn-view" class="view-container">
+                <div class="hymn-search-box">
+                    <div class="numpad-display">
+                        <input type="text" id="hymn-number-input" placeholder="장 번호 입력..." readonly>
+                        <button id="hymn-go-btn">Go</button>
+                    </div>
+                    <div class="numpad">
+                        <button class="num-btn">1</button><button class="num-btn">2</button><button class="num-btn">3</button>
+                        <button class="num-btn">4</button><button class="num-btn">5</button><button class="num-btn">6</button>
+                        <button class="num-btn">7</button><button class="num-btn">8</button><button class="num-btn">9</button>
+                        <button class="num-btn reset">C</button><button class="num-btn">0</button><button class="num-btn del">←</button>
+                    </div>
+                    <div class="text-search">
+                        <input type="text" id="hymn-text-input" placeholder="가사 또는 제목 검색...">
+                        <button id="hymn-search-btn"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
-                <div id="versesContainer">
-                    <div class="welcome-screen">
-                        <i class="fas fa-hands-praying"></i>
-                        <p>원하시는 성경 구절을 선택하여 읽어보세요.</p>
-                        <p class="hint">구절을 길게 누르면 북마크에 추가됩니다.</p>
+                <div id="hymn-reader" class="hidden">
+                    <div class="hymn-reader-header">
+                        <button id="back-to-hymn-search"><i class="fas fa-arrow-left"></i></button>
+                        <h3 id="hymn-title">제목</h3>
+                        <div class="hymn-actions">
+                            <button id="hymn-toggle-split" title="악보/가사 전환"><i class="fas fa-columns"></i></button>
+                            <button id="hymn-wake-lock" title="화면 유지"><i class="fas fa-sun"></i></button>
+                        </div>
+                    </div>
+                    <div id="hymn-content" class="split-layout">
+                        <div id="hymn-score-view" class="hymn-score-view">
+                            <img id="hymn-score-img" src="" alt="악보">
+                        </div>
+                        <div id="hymn-lyrics-view" class="hymn-lyrics-view">
+                            <div id="hymn-lyrics-text">가사</div>
+                        </div>
                     </div>
                 </div>
-            </section>
+                <div id="hymn-results" class="results-list hidden"></div>
+            </div>
         </main>
+
+        <!-- Bottom Tab Bar -->
+        <nav class="bottom-tab-bar">
+            <button class="tab-item active" data-view="bible">
+                <i class="fas fa-book-open"></i>
+                <span>성경</span>
+            </button>
+            <button class="tab-item" data-view="hymn">
+                <i class="fas fa-music"></i>
+                <span>찬송가</span>
+            </button>
+        </nav>
 
         <!-- Search Results Modal -->
         <div id="searchModal" class="modal">

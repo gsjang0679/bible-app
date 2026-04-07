@@ -129,6 +129,26 @@ def get_bookmarks():
     conn.close()
     return [dict(r) for r in results]
 
+@app.get("/api/hymns/{number}")
+def get_hymn(number: int):
+    conn = get_db()
+    hymn = conn.execute("SELECT * FROM hymns WHERE number = ?", (number,)).fetchone()
+    conn.close()
+    if hymn:
+        return dict(hymn)
+    raise HTTPException(status_code=404, detail="Hymn not found")
+
+@app.get("/api/hymns")
+def search_hymns(q: str = None):
+    conn = get_db()
+    if q:
+        query = "SELECT * FROM hymns WHERE title LIKE ? OR lyrics LIKE ? LIMIT 50"
+        results = conn.execute(query, (f"%{q}%", f"%{q}%")).fetchall()
+    else:
+        results = conn.execute("SELECT * FROM hymns ORDER BY number LIMIT 100").fetchall()
+    conn.close()
+    return [dict(r) for r in results]
+
 # Serve static files - 정적 파일도 보안이 필요하면 추가 설정 가능하나, 
 # 기본적으로 API에서 인증을 하므로 메인 페이지 진입 시 차단됩니다.
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
