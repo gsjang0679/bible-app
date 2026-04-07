@@ -55,20 +55,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch All Data (Once)
     const initData = async () => {
         try {
-            const response = await fetch('/static/bible_data.json');
+            console.log("Bible data loading started...");
+            const response = await fetch('/static/bible_data.json?v=4');
+            if(!response.ok) throw new Error("HTTP error " + response.status);
             state.bibleData = await response.json();
-            loadingIndicator.remove();
+            console.log("Bible data loaded successfully:", state.bibleData.books.length, "books found.");
+            
+            if (loadingIndicator && loadingIndicator.parentNode) {
+                loadingIndicator.remove();
+            }
             renderBooks();
+            console.log("Initial books rendered.");
         } catch (error) {
             console.error('Failed to load Bible data:', error);
-            loadingIndicator.innerText = "데이터 로딩 실패 (인터넷 연결을 확인하세요)";
+            if (loadingIndicator) {
+                loadingIndicator.innerText = "데이터 로드 오류: " + error.message;
+                loadingIndicator.style.background = "red";
+            }
         }
     };
 
     const renderBooks = () => {
+        if (!state.bibleData || !state.bibleData.books) {
+            console.warn("No bible data to render.");
+            return;
+        }
         bookList.innerHTML = '';
         const filtered = state.bibleData.books.filter(b => b.testament === (state.testament === 'OT' ? 'Old' : 'New'));
+        console.log(`Rendering ${filtered.length} books for ${state.testament}`);
         
+        if (filtered.length === 0) {
+            bookList.innerHTML = '<p style="padding:20px; text-align:center;">목록이 없습니다.</p>';
+        }
+
         filtered.forEach(book => {
             const div = document.createElement('div');
             div.className = 'book-item';
