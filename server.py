@@ -55,22 +55,17 @@ def health_check():
         "files_in_static": static_files
     }
 
-# 메인 페이지 접속 (보안 인증 적용)
-@app.get("/", dependencies=[Depends(authenticate)])
+# 메인 페이지 접속 (로그인 없이 바로 접속)
+@app.get("/")
 async def read_root():
     index_path = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)
     
-    # 파일이 없는 경우를 위한 상세 디버깅 메시지 출력
+    # 디버깅 메시지
     root_files = os.listdir(BASE_DIR) if os.path.exists(BASE_DIR) else []
     return HTMLResponse(
-        content=f"""
-        <h3>[오류] 메인 파일을 찾을 수 없습니다.</h3>
-        <p><b>기대 경로:</b> {index_path}</p>
-        <p><b>서버 내부 폴더 목록:</b> {root_files}</p>
-        <p>Render 배포 시 'static' 폴더가 제대로 포함되었는지 확인해 주세요.</p>
-        """, 
+        content=f"<h3>성경 앱 파일을 찾을 수 없습니다.</h3>경로: {index_path}<br>파일목록: {root_files}", 
         status_code=404
     )
 
@@ -82,28 +77,28 @@ def get_manifest():
 def get_sw():
     return FileResponse(os.path.join(STATIC_DIR, "sw.js"))
 
-@app.get("/api/books", dependencies=[Depends(authenticate)])
+@app.get("/api/books")
 def get_books():
     conn = get_db()
     books = conn.execute("SELECT * FROM books ORDER BY display_order").fetchall()
     conn.close()
     return [dict(b) for b in books]
 
-@app.get("/api/verses/{book_id}/{chapter}", dependencies=[Depends(authenticate)])
+@app.get("/api/verses/{book_id}/{chapter}")
 def get_verses(book_id: int, chapter: int):
     conn = get_db()
     verses = conn.execute("SELECT * FROM verses WHERE book_id = ? AND chapter = ? ORDER BY verse", (book_id, chapter)).fetchall()
     conn.close()
     return [dict(v) for v in verses]
 
-@app.get("/api/chapters/{book_id}", dependencies=[Depends(authenticate)])
+@app.get("/api/chapters/{book_id}")
 def get_chapters(book_id: int):
     conn = get_db()
     chapters = conn.execute("SELECT DISTINCT chapter FROM verses WHERE book_id = ? ORDER BY chapter", (book_id,)).fetchall()
     conn.close()
     return [r["chapter"] for r in chapters]
 
-@app.get("/api/search", dependencies=[Depends(authenticate)])
+@app.get("/api/search")
 def search(q: str):
     conn = get_db()
     query = "SELECT v.*, b.kor_full FROM verses v JOIN books b ON v.book_id = b.id WHERE v.content LIKE ? LIMIT 100"
@@ -111,7 +106,7 @@ def search(q: str):
     conn.close()
     return [dict(r) for r in results]
 
-@app.post("/api/bookmarks", dependencies=[Depends(authenticate)])
+@app.post("/api/bookmarks")
 async def add_bookmark(request: Request):
     data = await request.json()
     verse_id = data.get("verse_id")
@@ -121,7 +116,7 @@ async def add_bookmark(request: Request):
     conn.close()
     return {"status": "success"}
 
-@app.get("/api/bookmarks", dependencies=[Depends(authenticate)])
+@app.get("/api/bookmarks")
 def get_bookmarks():
     conn = get_db()
     results = conn.execute('''
