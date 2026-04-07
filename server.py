@@ -36,14 +36,43 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-# 모든 API와 페이지 접속 시 인증을 거치도록 설정 (authenticate 종속성 추가)
+# [진단용] 서버 상태 확인용 (로그인 인증 없음)
+@app.get("/test")
+def health_check():
+    try:
+        files = os.listdir(BASE_DIR)
+        static_files = os.listdir(STATIC_DIR) if os.path.exists(STATIC_DIR) else "not found"
+    except Exception as e:
+        files = str(e)
+        static_files = str(e)
+        
+    return {
+        "status": "ok", 
+        "message": "서버가 정상적으로 살아있습니다!",
+        "current_dir": BASE_DIR,
+        "files_in_root": files,
+        "static_dir": STATIC_DIR,
+        "files_in_static": static_files
+    }
+
+# 메인 페이지 접속 (보안 인증 적용)
 @app.get("/", dependencies=[Depends(authenticate)])
-def read_root():
+async def read_root():
     index_path = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_path):
-        with open(index_path, "r", encoding="utf-8") as f:
-            return HTMLResponse(content=f.read())
-    return "Please create index.html in static/"
+        return FileResponse(index_path)
+    
+    # 파일이 없는 경우를 위한 상세 디버깅 메시지 출력
+    root_files = os.listdir(BASE_DIR) if os.path.exists(BASE_DIR) else []
+    return HTMLResponse(
+        content=f"""
+        <h3>[오류] 메인 파일을 찾을 수 없습니다.</h3>
+        <p><b>기대 경로:</b> {index_path}</p>
+        <p><b>서버 내부 폴더 목록:</b> {root_files}</p>
+        <p>Render 배포 시 'static' 폴더가 제대로 포함되었는지 확인해 주세요.</p>
+        """, 
+        status_code=404
+    )
 
 @app.get("/manifest.json")
 def get_manifest():
