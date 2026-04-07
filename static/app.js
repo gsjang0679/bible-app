@@ -55,22 +55,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch All Data (Once)
     const initData = async () => {
         try {
-            console.log("Bible data loading started...");
-            const response = await fetch('/static/bible_data.json?v=4');
-            if(!response.ok) throw new Error("HTTP error " + response.status);
-            state.bibleData = await response.json();
-            console.log("Bible data loaded successfully:", state.bibleData.books.length, "books found.");
+            console.log("Loading books via API...");
+            const response = await fetch('/api/books');
+            if(!response.ok) throw new Error("API error: " + response.status);
+            state.bibleData.books = await response.json();
             
-            if (loadingIndicator && loadingIndicator.parentNode) {
-                loadingIndicator.remove();
-            }
+            // Normalize testament field for rendering
+            state.bibleData.books.forEach(b => {
+                if(b.testament === 'Old' || b.testament === 'New') return;
+                // Default if not set (or if integers are used in DB)
+                b.testament = (b.display_order < 39) ? 'Old' : 'New';
+            });
+
+            if (loadingIndicator) loadingIndicator.remove();
             renderBooks();
-            console.log("Initial books rendered.");
+            console.log("Books loaded via API successfully.");
+            
+            // Attempt offline data backup silently in background
+            fetch('/static/bible_data.json?v=5').then(res => res.json()).then(data => {
+                state.fullData = data; 
+                console.log("Offline data cached.");
+            }).catch(e => console.warn("Background data cache failed"));
+
         } catch (error) {
-            console.error('Failed to load Bible data:', error);
+            console.error('API loading failed:', error);
             if (loadingIndicator) {
-                loadingIndicator.innerText = "데이터 로드 오류: " + error.message;
-                loadingIndicator.style.background = "red";
+                loadingIndicator.innerText = "서버 연결 실패: " + error.message;
+                loadingIndicator.style.background = "#dc2626";
             }
         }
     };
@@ -97,16 +108,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const selectBook = (book) => {
+    const selectBook = async (book) => {
         state.currentBook = book;
         bookList.classList.add('hidden');
         chapterList.classList.remove('hidden');
         selectedBookNameHeader.innerText = book.kor_full;
         
-        // Find distinct chapters for the book
-        const bookVerses = state.bibleData.verses.filter(v => v.book_id === book.id);
-        const chapters = [...new Set(bookVerses.map(v => v.chapter))].sort((a, b) => a - b);
-        renderChapters(chapters, book.id);
+        try {
+            const response = await fetch(`/api/chapters/${book.id}`);
+            const chapters = await response.json();
+            renderChapters(chapters, book.id);
+        } catch (err) {
+            alert('장 정보를 가져오지 못했습니다.');
+        }
     };
 
     const renderChapters = (chapters, bookId) => {
@@ -120,13 +134,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const loadVerses = (bookId, chapter) => {
+    const loadVerses = async (bookId, chapter) => {
         state.currentChapter = chapter;
         const book = state.bibleData.books.find(b => b.id === bookId);
         currentLocationText.innerText = `${book.kor_full} ${chapter}장`;
         
-        const verses = state.bibleData.verses.filter(v => v.book_id === bookId && v.chapter === chapter);
-        renderVerses(verses);
+        try {
+            const response = await fetch(`/api/verses/${bookId}/${chapter}`);
+            const verses = await response.json();
+            renderVerses(verses);
+        } catch (err) {
+            alert('말씀을 가져오지 못했습니다.');
+        }
         
         // On mobile, collapse nav to focus on reader
         if (window.innerWidth <= 768) {
