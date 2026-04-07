@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>나만의 클린 성경 - Clean Bible Offline</title>
+    <link rel="stylesheet" href="/static/style.css?v=2">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="theme-color" content="#1a73e8">
+</head>
+<body class="light-mode">
+    <div id="app">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <button id="navToggleBtn"><i class="fas fa-bars"></i></button>
+                <i class="fas fa-bible"></i>
+                <span>클린 성경</span>
+            </div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="성경 검색...">
+                <button id="searchBtn"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="header-actions">
+                <button id="bookmarkBtn"><i class="fas fa-bookmark"></i></button>
+                <button id="themeToggle"><i class="fas fa-moon"></i></button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main>
+            <!-- Navigation Drawer (Book/Chapter Selection) -->
+            <nav id="navDrawer" class="active">
+                <div class="nav-tabs">
+                    <button class="nav-tab active" data-tab="OT">구약</button>
+                    <button class="nav-tab" data-tab="NT">신약</button>
+                </div>
+                <div class="book-list" id="bookList">
+                    <!-- Books will be injected here -->
+                </div>
+                <div class="chapter-list hidden" id="chapterList">
+                    <button class="back-to-books"><i class="fas fa-chevron-left"></i> 목록으로</button>
+                    <h3 id="selectedBookName">창세기</h3>
+                    <div class="chapters-grid" id="chaptersGrid">
+                        <!-- Chapters will be injected here -->
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Verse Reader -->
+            <section id="reader">
+                <div id="readerHeader">
+                    <h2 id="currentLocation">반가워요! 성경을 선택해주세요.</h2>
+                    <div class="font-settings">
+                        <i class="fas fa-font"></i>
+                        <input type="range" id="fontSizeSlider" min="14" max="40" value="18">
+                    </div>
+                </div>
+                <div id="versesContainer">
+                    <div class="welcome-screen">
+                        <i class="fas fa-hands-praying"></i>
+                        <p>원하시는 성경 구절을 선택하여 읽어보세요.</p>
+                        <p class="hint">구절을 길게 누르면 북마크에 추가됩니다.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Search Results Modal -->
+        <div id="searchModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>검색 결과</h3>
+                    <span class="close">&times;</span>
+                </div>
+                <div id="searchResults" class="results-list"></div>
+            </div>
+        </div>
+
+        <!-- Bookmarks Modal -->
+        <div id="bookmarkModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>내 북마크</h3>
+                    <span class="close">&times;</span>
+                </div>
+                <div id="bookmarkResults" class="results-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
+    <script src="/static/app.js?v=2"></script>
+</body>
+</html>

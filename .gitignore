@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+.vscode/
+bible.db-journal
+# bible.db  <-- SQLite 파일을 GitHub에 올릴 경우 주석 처리 해제
