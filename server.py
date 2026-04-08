@@ -155,12 +155,102 @@ def search_hymns(q: str = None):
     conn.close()
     return [dict(r) for r in results]
 
-# Serve static files - 정적 파일도 보안이 필요하면 추가 설정 가능하나, 
-# 기본적으로 API에서 인증을 하므로 메인 페이지 진입 시 차단됩니다.
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+# --- 데이터베이스 초기화 (공동 묵상 테이블 추가) ---
+def init_db():
+    conn = get_db()
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS meditation_notes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            author TEXT NOT NULL,
+            content TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS prayers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            author TEXT NOT NULL,
+            content TEXT NOT NULL,
+            is_answered INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+init_db()
+
+@app.get("/api/meditations")
+def get_meditations():
+    conn = get_db()
+    results = conn.execute("SELECT * FROM meditation_notes ORDER BY created_at DESC LIMIT 50").fetchall()
+    conn.close()
+    return [dict(r) for r in results]
+
+@app.post("/api/meditations")
+async def add_meditation(request: Request):
+    data = await request.json()
+    author = data.get("author")
+    content = data.get("content")
+    if not author or not content:
+        raise HTTPException(status_code=400, detail="Author and content are required")
+    
+    conn = get_db()
+    conn.execute("INSERT INTO meditation_notes (author, content) VALUES (?, ?)", (author, content))
+    conn.commit()
+    conn.close()
+    return {"status": "success"}
+
+@app.get("/api/prayers")
+def get_prayers():
+    conn = get_db()
+    results = conn.execute("SELECT * FROM prayers ORDER BY created_at DESC LIMIT 50").fetchall()
+    conn.close()
+    return [dict(r) for r in results]
+
+@app.post("/api/prayers")
+async def add_prayer(request: Request):
+    data = await request.json()
+    author = data.get("author")
+    content = data.get("content")
+    if not author or not content:
+        raise HTTPException(status_code=400, detail="Author and content are required")
+    
+    conn = get_db()
+    conn.execute("INSERT INTO prayers (author, content) VALUES (?, ?)", (author, content))
+    conn.commit()
+    conn.close()
+    return {"status": "success"}
+
+@app.post("/api/prayers/{prayer_id}/answer")
+async def toggle_prayer_answer(prayer_id: int):
+    conn = get_db()
+    conn.execute("UPDATE prayers SET is_answered = 1 - is_answered WHERE id = ?", (prayer_id,))
+    conn.commit()
+    conn.close()
+    return {"status": "success"}
+
+# Serve static files
+# 빌드된 React 앱의 자산들(JS, CSS 등)을 서빙합니다.
+app.mount("/assets", StaticFiles(directory=os.path.join(STATIC_DIR, "assets")), name="assets")
+
+# 루트 및 기타 모든 경로에 대해 index.html을 반환하여 React Router가 처리하게 합니다.
+# API 경로(/api)는 이 위에서 정의되었으므로 FastAPI가 먼저 가로챕니다.
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str):
+    # static 폴더 내에 실제로 파일이 존재하는지 확인 (manifest.json, sw.js 등)
+    file_path = os.path.join(STATIC_DIR, full_path)
+    if os.path.isfile(file_path):
+        return FileResponse(file_path)
+    
+    # 그 외의 경우(SPA 라우팅) index.html 반환
+    index_path = os.path.join(STATIC_DIR, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    
+    raise HTTPException(status_code=404, detail="Not Found")
 
 if __name__ == "__main__":
     import uvicorn
-    # 외부 클라우드 배포 시 포트 번호를 환경 변수에서 가져오도록 유연하게 설정 권장
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
