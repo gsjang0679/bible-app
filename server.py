@@ -32,7 +32,12 @@ DB_PATH = os.path.join(BASE_DIR, "bible.db")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
+    # Ensure the database path is absolutely correct
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    db_file = os.path.join(current_dir, "bible.db")
+    if not os.path.exists(db_file):
+        print(f"CRITICAL: Database not found at {db_file}")
+    conn = sqlite3.connect(db_file)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -52,7 +57,8 @@ def health_check():
         "current_dir": BASE_DIR,
         "files_in_root": files,
         "static_dir": STATIC_DIR,
-        "files_in_static": static_files
+        "files_in_static": static_files,
+        "db_path": DB_PATH
     }
 
 # 메인 페이지 접속 (로그인 없이 바로 접속)

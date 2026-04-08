@@ -1,8 +1,8 @@
-const CACHE_NAME = 'bible-cache-v6';
+const CACHE_NAME = 'bible-cache-v7';
 const urlsToCache = [
   '/',
-  '/static/style.css?v=6',
-  '/static/app.js?v=6',
+  '/static/style.css?v=7',
+  '/static/app.js?v=7',
   '/static/bible_data.json',
   '/manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
