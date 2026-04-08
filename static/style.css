@@ -1,0 +1,708 @@
+
+/* Modern Bible App Design */
+:root {
+    --primary-color: #1a73e8;
+    --background: #f8f9fa;
+    --surface: #ffffff;
+    --text-primary: #202124;
+    --text-secondary: #5f6368;
+    --border-color: #dadce0;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --header-height: 60px;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.3);
+}
+
+.dark-mode {
+    --primary-color: #8ab4f8;
+    --background: #202124;
+    --surface: #2d2e31;
+    --text-primary: #e8eaed;
+    --text-secondary: #9aa0a6;
+    --border-color: #3c4043;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    --glass-bg: rgba(45, 46, 49, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.05);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    height: 100vh;
+    height: -webkit-fill-available;
+    overflow: hidden;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+header {
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    #navToggleBtn {
+        display: none;
+    }
+
+.search-container {
+    flex: 1;
+    max-width: 400px;
+    margin: 0 20px;
+    position: relative;
+    display: flex;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background-color: var(--surface);
+    color: var(--text-primary);
+    outline: none;
+    transition: box-shadow 0.2s;
+}
+
+.search-container input:focus {
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.search-container button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.header-actions {
+    display: flex;
+    gap: 15px;
+}
+
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    padding: 5px;
+}
+
+/* Main Content Layout Adjustments */
+main {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 60px; /* Space for bottom tab bar */
+}
+
+.view-container {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0; left: 0;
+    background: var(--background);
+    color: var(--text-primary);
+}
+
+.view-container.active {
+    display: flex;
+}
+
+#bible-view {
+    width: 100%;
+}
+
+#hymn-view {
+    width: 100%;
+    flex-direction: column;
+    padding: 10px 10px 75px 10px; /* Offset for bottom tab bar */
+    background: var(--background);
+}
+
+/* --- Bottom Tab Bar --- */
+.bottom-tab-bar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: white !important;
+    display: flex;
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+    z-index: 9999 !important;
+}
+
+.tab-item {
+    flex: 1;
+    border: none;
+    background: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 11px;
+    gap: 4px;
+    transition: all 0.2s;
+}
+
+.tab-item.active {
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.tab-item i {
+    font-size: 20px;
+}
+
+/* --- Hymn UI Components --- */
+.hymn-search-box {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.numpad-display {
+    display: flex;
+    gap: 10px;
+}
+
+#hymn-number-input {
+    flex: 1;
+    font-size: 24px;
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--primary-color);
+    background: var(--surface);
+}
+
+#hymn-go-btn {
+    padding: 0 25px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.num-btn {
+    padding: 20px;
+    font-size: 22px;
+    font-weight: 700;
+    border: none;
+    background: #f1f5f9;
+    color: #1e293b;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.dark-mode .num-btn {
+    background: #334155;
+    color: #f8fafc;
+}
+
+.num-btn:active {
+    background: #e2e8f0;
+    transform: scale(0.95);
+}
+
+.num-btn.reset { color: #ef4444; }
+.num-btn.del { color: #64748b; }
+
+.text-search {
+    display: flex;
+    gap: 8px;
+}
+
+.text-search input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.text-search button {
+    padding: 12px;
+    background: #64748b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+}
+
+/* Hymn Reader Styles */
+#hymn-reader {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 16px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.hymn-reader-header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    gap: 15px;
+}
+
+#hymn-title { flex: 1; font-size: 18px; }
+
+.hymn-actions button {
+    background: none; border: none; font-size: 18px; color: #666; cursor: pointer; margin-left: 10px;
+}
+
+.split-layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.hymn-score-view {
+    flex: 6;
+    background: #fff;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #eee;
+}
+
+.hymn-score-view img {
+    max-width: 100%;
+    height: auto;
+}
+
+.hymn-lyrics-view {
+    flex: 4;
+    padding: 20px;
+    overflow-y: auto;
+    text-align: center;
+    line-height: 1.8;
+}
+
+#hymn-lyrics-text {
+    white-space: pre-wrap;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.nav-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-tab {
+    flex: 1;
+    padding: 15px;
+    background: none;
+    border: none;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.nav-tab.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.book-list {
+    padding: 10px 0;
+}
+
+.book-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.book-item:hover {
+    background-color: rgba(var(--primary-color), 0.1);
+}
+
+.book-item.active {
+    background-color: rgba(var(--primary-color), 0.1);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.chapter-list {
+    padding: 20px;
+}
+
+.back-to-books {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.chapter-item {
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.chapter-item:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+section#reader {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+#readerHeader {
+    padding: 20px 30px;
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(5px);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+}
+
+.font-settings {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: var(--surface);
+    padding: 5px 15px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+}
+
+input[type=range] {
+    accent-color: var(--primary-color);
+}
+
+#versesContainer {
+    padding: 30px;
+    line-height: 1.8;
+}
+
+.verse {
+    margin-bottom: 15px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+    user-select: none; /* Long press might trigger selection if not careful */
+}
+
+.verse:active {
+    background-color: rgba(var(--primary-color), 0.2);
+}
+
+.v-num {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 0.9em;
+    margin-right: -4px; /* Reduced from 8px to bring text closer */
+    opacity: 0.8;
+}
+
+/* Modals */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background-color: var(--surface);
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.close {
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.results-list .result-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: var(--background);
+}
+
+.location-tag {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    #navToggleBtn {
+        display: block;
+        margin-right: 15px;
+        font-size: 1.3rem;
+    }
+
+    header {
+        padding: 5px 15px;
+    }
+    .logo span {
+        display: none;
+    }
+    .search-container {
+        margin: 0 10px;
+    }
+    
+    main {
+        flex-direction: row; /* Keep row but use absolute positioning for overlays if needed, or simple toggle */
+    }
+    
+    nav {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 500;
+        border-right: none;
+        background-color: var(--background);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    nav.collapsed {
+        transform: translateX(-100%);
+    }
+    
+    section#reader {
+        width: 100%;
+        height: 100%;
+    }
+    
+    #readerHeader {
+        padding: 10px 15px;
+    }
+    
+    #versesContainer {
+        padding: 20px 15px 80px 15px; /* Extra bottom padding for mobile */
+    }
+    
+    .chapters-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .font-settings {
+        padding: 5px 10px;
+        gap: 8px;
+    }
+    
+    .font-settings input {
+        width: 60px;
+    }
+}
+
+/* Welcome Screen */
+.welcome-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    color: var(--text-secondary);
+}
+
+.welcome-screen i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    opacity: 0.5;
+}
+
+.welcome-screen p {
+    font-size: 1.2rem;
+}
+
+.hint {
+    margin-top: 20px;
+    font-size: 0.9rem !important;
+}
+
+/* Hidden elements */
+/* --- Fullscreen Mode --- */
+body.fullscreen-mode {
+    overflow: hidden;
+}
+
+body.fullscreen-mode header,
+body.fullscreen-mode .bottom-tab-bar,
+body.fullscreen-mode nav#navDrawer {
+    display: none !important;
+}
+
+body.fullscreen-mode main {
+    padding-bottom: 0;
+}
+
+body.fullscreen-mode section#reader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background-color: var(--background);
+}
+
+body.fullscreen-mode #readerHeader {
+    display: none !important;
+}
+
+body.fullscreen-mode #versesContainer {
+    max-height: 100vh;
+    height: 100vh;
+    padding: 1.5rem 1rem 5rem 1rem !important;
+    overflow-y: auto;
+}
+
+.floating-exit-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.floating-exit-btn i {
+    font-size: 1rem;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Add custom icon button style for readerHeader */
+#fullscreenToggleBtn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#fullscreenToggleBtn:hover {
+    color: var(--primary-color);
+}
