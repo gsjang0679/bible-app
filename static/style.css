@@ -154,19 +154,22 @@ main {
 #hymn-view {
     width: 100%;
     flex-direction: column;
-    padding: 10px;
+    padding: 10px 10px 75px 10px; /* Offset for bottom tab bar */
     background: var(--background);
 }
 
 /* --- Bottom Tab Bar --- */
 .bottom-tab-bar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0;
+    right: 0;
     height: 65px;
-    flex-shrink: 0;
-    background: white;
+    background: white !important;
     display: flex;
     border-top: 1px solid var(--border-color);
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    z-index: 1000;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+    z-index: 9999 !important;
 }
 
 .tab-item {
