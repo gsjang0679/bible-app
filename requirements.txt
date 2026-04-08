@@ -1,5 +1,5 @@
-
 fastapi
 uvicorn
 jinja2
 python-multipart
+# sqlite3와 json은 파이썬 표준 라이브러리이므로 별도 명시가 필요 없습니다.
