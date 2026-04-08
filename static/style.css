@@ -478,7 +478,7 @@ input[type=range] {
     font-weight: 700;
     color: var(--primary-color);
     font-size: 0.9em;
-    margin-right: -4px; /* Reduced from 8px to bring text closer */
+    margin-right: 8px;
     opacity: 0.8;
 }
 
@@ -628,81 +628,4 @@ input[type=range] {
     font-size: 0.9rem !important;
 }
 
-/* Hidden elements */
-/* --- Fullscreen Mode --- */
-body.fullscreen-mode {
-    overflow: hidden;
-}
 
-body.fullscreen-mode header,
-body.fullscreen-mode .bottom-tab-bar,
-body.fullscreen-mode nav#navDrawer {
-    display: none !important;
-}
-
-body.fullscreen-mode main {
-    padding-bottom: 0;
-}
-
-body.fullscreen-mode section#reader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 9999;
-    background-color: var(--background);
-}
-
-body.fullscreen-mode #readerHeader {
-    display: none !important;
-}
-
-body.fullscreen-mode #versesContainer {
-    max-height: 100vh;
-    height: 100vh;
-    padding: 1.5rem 1rem 5rem 1rem !important;
-    overflow-y: auto;
-}
-
-.floating-exit-btn {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 30px;
-    font-weight: bold;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.floating-exit-btn i {
-    font-size: 1rem;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* Add custom icon button style for readerHeader */
-#fullscreenToggleBtn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#fullscreenToggleBtn:hover {
-    color: var(--primary-color);
-}

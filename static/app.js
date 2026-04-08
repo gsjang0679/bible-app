@@ -525,14 +525,4 @@ document.addEventListener('DOMContentLoaded', () => {
     initData();
 });
 
-function toggleFullscreen() {
-    const body = document.body;
-    const exitBtn = document.getElementById('exitFullscreenBtn');
-    const isFull = body.classList.toggle('fullscreen-mode');
-    
-    if (isFull) {
-        exitBtn.classList.remove('hidden');
-    } else {
-        exitBtn.classList.add('hidden');
-    }
-}
+
