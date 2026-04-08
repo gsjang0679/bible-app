@@ -1,631 +1,344 @@
-
-/* Modern Bible App Design */
 :root {
-    --primary-color: #1a73e8;
-    --background: #f8f9fa;
-    --surface: #ffffff;
-    --text-primary: #202124;
-    --text-secondary: #5f6368;
-    --border-color: #dadce0;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --header-height: 60px;
-    --glass-bg: rgba(255, 255, 255, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.3);
-}
-
-.dark-mode {
-    --primary-color: #8ab4f8;
-    --background: #202124;
-    --surface: #2d2e31;
-    --text-primary: #e8eaed;
-    --text-secondary: #9aa0a6;
-    --border-color: #3c4043;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-    --glass-bg: rgba(45, 46, 49, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.05);
+    --bg-dark: #0f172a;
+    --bg-card: rgba(30, 41, 59, 0.7);
+    --accent: #38bdf8;
+    --text-main: #f8fafc;
+    --text-dim: #94a3b8;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
 }
 
 body {
-    background-color: var(--background);
-    color: var(--text-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
-    height: 100vh;
-    height: -webkit-fill-available;
-    overflow: hidden;
+    font-family: 'Outfit', 'Noto Serif KR', serif;
+    background: radial-gradient(circle at top left, #1e293b, #0f172a);
+    color: var(--text-main);
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 #app {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
+    height: 100vh;
 }
 
-header {
-    background-color: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-color);
-    padding: 10px 20px;
+/* Glass Navigation */
+.glass-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--glass-border);
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 100;
 }
 
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--primary-color);
-        font-weight: 700;
-        font-size: 1.2rem;
-    }
-
-    #navToggleBtn {
-        display: none;
-    }
-
-.search-container {
-    flex: 1;
-    max-width: 400px;
-    margin: 0 20px;
-    position: relative;
-    display: flex;
-}
-
-.search-container input {
-    width: 100%;
-    padding: 8px 15px;
-    border-radius: 20px;
-    border: 1px solid var(--border-color);
-    background-color: var(--surface);
-    color: var(--text-primary);
-    outline: none;
-    transition: box-shadow 0.2s;
-}
-
-.search-container input:focus {
-    box-shadow: 0 0 0 2px var(--primary-color);
-}
-
-.search-container button {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-}
-
-.header-actions {
-    display: flex;
-    gap: 15px;
-}
-
-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    padding: 5px;
-}
-
-/* Main Content Layout Adjustments */
-main {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-    position: relative;
-    padding-bottom: 60px; /* Space for bottom tab bar */
-}
-
-.view-container {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0; left: 0;
-    background: var(--background);
-    color: var(--text-primary);
-}
-
-.view-container.active {
-    display: flex;
-}
-
-#bible-view {
-    width: 100%;
-}
-
-#hymn-view {
-    width: 100%;
-    flex-direction: column;
-    padding: 10px 10px 75px 10px; /* Offset for bottom tab bar */
-    background: var(--background);
-}
-
-/* --- Bottom Tab Bar --- */
-.bottom-tab-bar {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0;
-    right: 0;
-    height: 65px;
-    background: white !important;
-    display: flex;
-    border-top: 1px solid var(--border-color);
-    box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
-    z-index: 9999 !important;
-}
-
-.tab-item {
-    flex: 1;
-    border: none;
-    background: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #94a3b8;
-    font-size: 11px;
-    gap: 4px;
-    transition: all 0.2s;
-}
-
-.tab-item.active {
-    color: var(--primary-color);
-    transform: translateY(-2px);
-}
-
-.tab-item i {
-    font-size: 20px;
-}
-
-/* --- Hymn UI Components --- */
-.hymn-search-box {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-.numpad-display {
-    display: flex;
-    gap: 10px;
-}
-
-#hymn-number-input {
-    flex: 1;
-    font-size: 24px;
-    padding: 12px;
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    text-align: center;
-    font-weight: bold;
-    color: var(--primary-color);
-    background: var(--surface);
-}
-
-#hymn-go-btn {
-    padding: 0 25px;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.numpad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
-
-.num-btn {
-    padding: 20px;
-    font-size: 22px;
+.logo {
+    font-size: 1.5rem;
     font-weight: 700;
-    border: none;
-    background: #f1f5f9;
-    color: #1e293b;
-    border-radius: 12px;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    letter-spacing: 2px;
+    background: linear-gradient(to right, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.dark-mode .num-btn {
-    background: #334155;
-    color: #f8fafc;
-}
-
-.num-btn:active {
-    background: #e2e8f0;
-    transform: scale(0.95);
-}
-
-.num-btn.reset { color: #ef4444; }
-.num-btn.del { color: #64748b; }
-
-.text-search {
-    display: flex;
-    gap: 8px;
-}
-
-.text-search input {
-    flex: 1;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-}
-
-.text-search button {
-    padding: 12px;
-    background: #64748b;
-    color: white;
-    border: none;
-    border-radius: 8px;
-}
-
-/* Hymn Reader Styles */
-#hymn-reader {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: white;
-    border-radius: 16px;
-    margin-top: 10px;
-    overflow: hidden;
-}
-
-.hymn-reader-header {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-    gap: 15px;
-}
-
-#hymn-title { flex: 1; font-size: 18px; }
-
-.hymn-actions button {
-    background: none; border: none; font-size: 18px; color: #666; cursor: pointer; margin-left: 10px;
-}
-
-.split-layout {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.hymn-score-view {
-    flex: 6;
-    background: #fff;
-    overflow: auto;
-    display: flex;
-    justify-content: center;
-    border-bottom: 1px solid #eee;
-}
-
-.hymn-score-view img {
-    max-width: 100%;
-    height: auto;
-}
-
-.hymn-lyrics-view {
-    flex: 4;
-    padding: 20px;
-    overflow-y: auto;
-    text-align: center;
-    line-height: 1.8;
-}
-
-#hymn-lyrics-text {
-    white-space: pre-wrap;
-    font-size: 1.2rem;
-    font-weight: 500;
-}
-
-.nav-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.nav-tab {
-    flex: 1;
-    padding: 15px;
+.nav-links button {
     background: none;
     border: none;
-    font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--text-dim);
+    margin-left: 1.5rem;
+    font-size: 1rem;
     cursor: pointer;
-}
-
-.nav-tab.active {
-    color: var(--primary-color);
-    border-bottom: 3px solid var(--primary-color);
-}
-
-.book-list {
-    padding: 10px 0;
-}
-
-.book-item {
-    padding: 12px 20px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    display: flex;
-    justify-content: space-between;
+    transition: all 0.3s ease;
+    display: inline-flex;
     align-items: center;
+    gap: 0.5rem;
 }
 
-.book-item:hover {
-    background-color: rgba(var(--primary-color), 0.1);
+.nav-links button:hover, .nav-links button.active {
+    color: var(--accent);
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
 }
 
-.book-item.active {
-    background-color: rgba(var(--primary-color), 0.1);
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.chapter-list {
-    padding: 20px;
-}
-
-.back-to-books {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--primary-color);
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-.chapters-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-}
-
-.chapter-item {
-    aspect-ratio: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--background);
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.chapter-item:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-section#reader {
+/* Content Area */
+.content {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-}
-
-#readerHeader {
-    padding: 20px 30px;
-    background-color: var(--glass-bg);
-    backdrop-filter: blur(5px);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 99;
-}
-
-.font-settings {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    background: var(--surface);
-    padding: 5px 15px;
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-}
-
-input[type=range] {
-    accent-color: var(--primary-color);
-}
-
-#versesContainer {
-    padding: 30px;
-    line-height: 1.8;
-}
-
-.verse {
-    margin-bottom: 15px;
-    padding: 8px;
-    border-radius: 8px;
-    transition: background-color 0.2s;
-    user-select: none; /* Long press might trigger selection if not careful */
-}
-
-.verse:active {
-    background-color: rgba(var(--primary-color), 0.2);
-}
-
-.v-num {
-    font-weight: 700;
-    color: var(--primary-color);
-    font-size: 0.9em;
-    margin-right: 8px;
-}
-
-/* Modals */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 2000;
-    left: 0;
-    top: 0;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.4);
-    backdrop-filter: blur(4px);
 }
 
-.modal-content {
-    background-color: var(--surface);
-    margin: 5% auto;
-    padding: 20px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow);
+.page {
+    display: none;
+    animation: fadeIn 0.5s ease;
 }
 
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
-}
-
-.close {
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.results-list .result-item {
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 8px;
-    background-color: var(--background);
-}
-
-.location-tag {
-    font-size: 0.8rem;
-    font-weight: bold;
-    color: var(--primary-color);
-    margin-bottom: 5px;
+.page.active {
     display: block;
 }
 
-/* Mobile Responsive */
-@media (max-width: 768px) {
-    #navToggleBtn {
-        display: block;
-        margin-right: 15px;
-        font-size: 1.3rem;
-    }
-
-    header {
-        padding: 5px 15px;
-    }
-    .logo span {
-        display: none;
-    }
-    .search-container {
-        margin: 0 10px;
-    }
-    
-    main {
-        flex-direction: row; /* Keep row but use absolute positioning for overlays if needed, or simple toggle */
-    }
-    
-    nav {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 500;
-        border-right: none;
-        background-color: var(--background);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    nav.collapsed {
-        transform: translateX(-100%);
-    }
-    
-    section#reader {
-        width: 100%;
-        height: 100%;
-    }
-    
-    #readerHeader {
-        padding: 10px 15px;
-    }
-    
-    #versesContainer {
-        padding: 20px 15px 80px 15px; /* Extra bottom padding for mobile */
-    }
-    
-    .chapters-grid {
-        grid-template-columns: repeat(5, 1fr);
-    }
-
-    .font-settings {
-        padding: 5px 10px;
-        gap: 8px;
-    }
-    
-    .font-settings input {
-        width: 60px;
-    }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Welcome Screen */
-.welcome-screen {
+/* Header & Controls */
+.header {
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 300;
+    text-align: center;
+}
+
+.selectors {
     display: flex;
-    flex-direction: column;
+    gap: 1rem;
     align-items: center;
     justify-content: center;
-    height: 60vh;
-    color: var(--text-secondary);
+    flex-wrap: wrap;
+    margin-top: 1rem;
 }
 
-.welcome-screen i {
-    font-size: 4rem;
-    margin-bottom: 20px;
-    color: var(--primary-color);
-    opacity: 0.5;
+.font-control {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: var(--bg-card);
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
 }
 
-.welcome-screen p {
-    font-size: 1.2rem;
+.font-control i {
+    color: var(--text-dim);
 }
 
-.hint {
-    margin-top: 20px;
-    font-size: 0.9rem !important;
+input[type="range"] {
+    cursor: pointer;
+    accent-color: var(--accent);
 }
 
-/* Hidden elements */
-.hidden { display: none; }
+select, input {
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    padding: 0.8rem 1.2rem;
+    border-radius: 12px;
+    outline: none;
+    font-family: inherit;
+    transition: 0.3s;
+}
+
+select:focus, input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+/* Bible Verses */
+.scroll-container {
+    background: var(--bg-card);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 2rem;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.verse-row {
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    font-size: var(--verse-size, 1.4rem);
+    display: flex;
+    gap: 1.2rem;
+}
+
+.verse-num {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: calc(var(--verse-size, 1.4rem) * 0.8);
+    min-width: 40px;
+}
+
+/* Hymnal List */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.hymn-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    padding: 1.5rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.hymn-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    background: rgba(56, 189, 248, 0.15);
+    border-color: var(--accent);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+.hymn-no {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+}
+
+.hymn-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* Hymn Detail */
+.back-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+.detail-container {
+    background: var(--bg-card);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    padding: 3rem;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.6s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hymn-header {
+    margin-bottom: 2rem;
+}
+
+.bookmark-btn {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.bookmark-btn:hover {
+    background: var(--accent);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+}
+.sheet-music img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    margin-bottom: 2rem;
+}
+
+.lyrics-text {
+    font-family: 'Noto Serif KR', serif;
+    white-space: pre-wrap;
+    line-height: 2.5;
+    font-size: 1.3rem;
+    color: #e2e8f0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 10px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .glass-nav {
+        padding: 0.8rem 1rem;
+    }
+    
+    .nav-links button {
+        margin-left: 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .content {
+        padding: 0.5rem;
+    }
+    
+    .header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .selectors {
+        gap: 0.5rem;
+    }
+    
+    .scroll-container {
+        padding: 1rem;
+        max-height: 60vh;
+    }
+    
+    .verse-row {
+        font-size: var(--verse-size, 1.2rem);
+        line-height: 1.2;
+    }
+
+    .grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+    }
+    
+    .detail-container {
+        padding: 1.5rem;
+    }
+    
+    .lyrics-text {
+        font-size: 1.1rem;
+    }
+}
