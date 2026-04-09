@@ -172,7 +172,7 @@ async def upload_file(file: UploadFile = File(...)):
     return {"url": f"/static/uploads/{safe_filename}"}
 
 # Serve static files
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+# app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 @app.get("/")
 async def read_index():
