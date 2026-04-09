@@ -1,1 +1,22 @@
-if(!self.define){let e,i={};const n=(n,s)=>(n=new URL(n+".js",s).href,i[n]||new Promise(i=>{if("document"in self){const e=document.createElement("script");e.src=n,e.onload=i,document.head.appendChild(e)}else e=n,importScripts(n),i()}).then(()=>{let e=i[n];if(!e)throw new Error(`Module ${n} didn’t register its module`);return e}));self.define=(s,r)=>{const t=e||("document"in self?document.currentScript.src:"")||location.href;if(i[t])return;let c={};const o=e=>n(e,t),f={module:{uri:t},exports:c,require:o};i[t]=Promise.all(s.map(e=>f[e]||o(e))).then(e=>(r(...e),c))}}define(["./workbox-8c29f6e4"],function(e){"use strict";self.skipWaiting(),e.clientsClaim(),e.precacheAndRoute([{url:"registerSW.js",revision:"1872c500de691dce40960bb85481de07"},{url:"index.html",revision:"3fb10f456e4c8de575b80065986c737e"},{url:"assets/index-DqYU7Lxb.css",revision:null},{url:"assets/index-B99LHj6w.js",revision:null},{url:"apple-touch-icon.png",revision:"cf1f2c40fa920fbaf22e8d3dc8aa41ea"},{url:"pwa-192x192.png",revision:"cf1f2c40fa920fbaf22e8d3dc8aa41ea"},{url:"pwa-512x512.png",revision:"cf1f2c40fa920fbaf22e8d3dc8aa41ea"},{url:"manifest.webmanifest",revision:"88a1596abd7e6bd8cd9caba72d4038b1"}],{}),e.cleanupOutdatedCaches(),e.registerRoute(new e.NavigationRoute(e.createHandlerBoundToURL("index.html")))});
+self.addEventListener('install', function(e) {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', function(e) {
+  e.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.map(function(cacheName) {
+          return caches.delete(cacheName);
+        })
+      );
+    }).then(function() {
+      self.clients.claim();
+    })
+  );
+});
+
+self.addEventListener('fetch', function(e) {
+  // Bypass cache completely and fetch from network
+  e.respondWith(fetch(e.request));
+});

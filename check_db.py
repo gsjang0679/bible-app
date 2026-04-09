@@ -1,19 +1,27 @@
 import sqlite3
 import os
 
-db_path = "bible.db"
-if os.path.exists(db_path):
-    conn = sqlite3.connect(db_path)
+DB_PATH = "bible.db"
+
+def check_db():
+    if not os.path.exists(DB_PATH):
+        print(f"DB not found: {DB_PATH}")
+        return
+    
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    tables = cursor.fetchall()
-    print("Tables:", [t[0] for t in tables])
     
-    # Check if hymns table exists and its schema
-    if ("hymns",) in tables:
-        cursor.execute("PRAGMA table_info(hymns);")
-        print("Hymns schema:", cursor.fetchall())
-    
+    print("--- Books ---")
+    cursor.execute("SELECT * FROM books LIMIT 5;")
+    for row in cursor.fetchall():
+        print(row)
+        
+    print("\n--- Verses ---")
+    cursor.execute("SELECT * FROM verses LIMIT 5;")
+    for row in cursor.fetchall():
+        print(row)
+        
     conn.close()
-else:
-    print("DB not found")
+
+if __name__ == "__main__":
+    check_db()

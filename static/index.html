@@ -5,117 +5,195 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>나만의 클린 성경 - Clean Bible Offline</title>
-    <link rel="stylesheet" href="/static/style.css?v=9">
+    <link rel="stylesheet" href="/static/style.css?v=12">
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta name="theme-color" content="#1a73e8">
 </head>
 <body class="light-mode">
     <div id="app">
-        <!-- Header -->
-        <header>
-            <div class="logo">
-                <button id="navToggleBtn"><i class="fas fa-bars"></i></button>
-                <i class="fas fa-bible"></i>
-                <span>클린 성경</span>
-            </div>
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="성경 검색...">
-                <button id="searchBtn"><i class="fas fa-search"></i></button>
-            </div>
-            <div class="header-actions">
-                <a href="/static/hymn.html" id="hymnBtn" title="찬송가 보기" style="color: white; font-size: 20px; margin-right: 15px; text-decoration: none;"><i class="fas fa-music"></i></a>
-                <button id="bookmarkBtn"><i class="fas fa-bookmark"></i></button>
-                <button id="themeToggle"><i class="fas fa-moon"></i></button>
-            </div>
-        </header>
-
-        <!-- Main Content Area -->
         <!-- Main Content Area -->
         <main>
-            <!-- Bible ViewContainer -->
-            <div id="bible-view" class="view-container active">
-                <nav id="navDrawer" class="active">
-                    <div class="nav-tabs">
-                        <button class="nav-tab active" data-tab="OT">구약</button>
-                        <button class="nav-tab" data-tab="NT">신약</button>
-                    </div>
-                    <div class="book-list" id="bookList"></div>
-                    <div class="chapter-list hidden" id="chapterList">
-                        <button class="back-to-books"><i class="fas fa-chevron-left"></i> 목록으로</button>
-                        <h3 id="selectedBookName">창세기</h3>
-                        <div class="chapters-grid" id="chaptersGrid"></div>
-                    </div>
-                </nav>
+            <!-- 1. Home View -->
+            <div id="home-view" class="view-container active">
+                <div class="home-logo-container">
+                    <div class="subtitle">개역개정</div>
+                    <h1>클린 성경</h1>
+                </div>
 
-                <section id="reader">
-                    <div id="readerHeader">
-                        <h2 id="currentLocation">반가워요! 성경을 선택해주세요.</h2>
-                        <div class="font-settings">
-                            <i class="fas fa-font"></i>
-                            <input type="range" id="fontSizeSlider" min="14" max="40" value="18">
-                        </div>
-                    </div>
-                    <div id="versesContainer">
-                        <div class="welcome-screen">
-                            <i class="fas fa-hands-praying"></i>
-                            <p>원하시는 성경 구절을 선택하여 읽어보세요.</p>
-                        </div>
-                    </div>
-                </section>
+                <div class="home-menu-btns">
+                    <button class="gold-outline-btn" data-target="bible-select-view">
+                        <i class="fas fa-book"></i> 성경 전서
+                    </button>
+                    <button class="gold-outline-btn" data-target="hymn-select-view">
+                        <i class="fas fa-music"></i> 찬 송 가
+                    </button>
+                    <button class="gold-outline-btn" data-target="story-view">
+                        <i class="fas fa-heart"></i> 우리 이야기
+                    </button>
+                </div>
             </div>
 
-            <!-- Hymn View Container -->
-            <div id="hymn-view" class="view-container">
-                <div class="hymn-search-box">
-                    <div class="numpad-display">
-                        <input type="text" id="hymn-number-input" placeholder="장 번호 입력..." readonly>
-                        <button id="hymn-go-btn">Go</button>
+            <!-- 2. Bible Selection View (Step 2 Implementation) -->
+            <div id="bible-select-view" class="view-container">
+                <div class="view-header">
+                    <button class="back-btn" data-target="home-view"><i class="fas fa-arrow-left"></i></button>
+                    <h3>성경 선택</h3>
+                    <div style="width:24px;"></div>
+                </div>
+                <div class="selection-tabs">
+                    <button class="selection-tab active" data-tab="OT">성경</button>
+                    <button class="selection-tab" data-tab="CH">장</button>
+                </div>
+                <div id="bookSelectionList" class="list-container">
+                    <!-- Books will be rendered here -->
+                </div>
+                <div id="chapterSelectionGrid" class="grid-container hidden">
+                    <!-- Chapters grid will be rendered here -->
+                </div>
+            </div>
+
+            <!-- 3. Classic Reader View -->
+            <div id="reader-view" class="view-container classic-reader">
+                <div class="view-header reader-header" style="justify-content: space-between; padding-left: 20px;">
+                    <h3 id="readerViewTitle" class="back-btn" data-target="bible-select-view" style="margin:0; text-align:left; cursor:pointer;">성경 읽기</h3>
+                    <button class="action-btn" id="readerSearchBtn"><i class="fas fa-question"></i></button>
+                </div>
+                <div id="versesContainer" class="reader-content">
+                    <!-- Verses will be rendered here -->
+                </div>
+                <div class="reader-footer">
+                    <div class="reader-nav-btns">
+                        <button id="prevChapterBtn" class="reader-nav-btn"><i class="fas fa-caret-left"></i></button>
+                        <button id="nextChapterBtn" class="reader-nav-btn" style="margin-left:10px;"><i class="fas fa-caret-right"></i></button>
                     </div>
-                    <div class="numpad">
-                        <button class="num-btn">1</button><button class="num-btn">2</button><button class="num-btn">3</button>
-                        <button class="num-btn">4</button><button class="num-btn">5</button><button class="num-btn">6</button>
-                        <button class="num-btn">7</button><button class="num-btn">8</button><button class="num-btn">9</button>
-                        <button class="num-btn reset">C</button><button class="num-btn">0</button><button class="num-btn del">←</button>
-                    </div>
-                    <div class="text-search">
-                        <input type="text" id="hymn-text-input" placeholder="가사 또는 제목 검색...">
-                        <button id="hymn-search-btn"><i class="fas fa-search"></i></button>
+                    <div class="reader-zoom-btns">
+                        <button id="zoomOutBtn" class="zoom-btn"><i class="fas fa-search-minus"></i></button>
+                        <button id="zoomInBtn" class="zoom-btn"><i class="fas fa-search-plus"></i></button>
                     </div>
                 </div>
-                <div id="hymn-reader" class="hidden">
-                    <div class="hymn-reader-header">
-                        <button id="back-to-hymn-search"><i class="fas fa-arrow-left"></i></button>
-                        <h3 id="hymn-title">제목</h3>
-                        <div class="hymn-actions">
-                            <button id="hymn-toggle-split" title="악보/가사 전환"><i class="fas fa-columns"></i></button>
-                            <button id="hymn-wake-lock" title="화면 유지"><i class="fas fa-sun"></i></button>
-                        </div>
-                    </div>
-                    <div id="hymn-content" class="split-layout">
-                        <div id="hymn-score-view" class="hymn-score-view">
-                            <img id="hymn-score-img" src="" alt="악보">
-                        </div>
-                        <div id="hymn-lyrics-view" class="hymn-lyrics-view">
-                            <div id="hymn-lyrics-text">가사</div>
-                        </div>
+            </div>
+
+            <!-- 4. Hymn Selection View -->
+            <div id="hymn-select-view" class="view-container">
+                <div class="view-header">
+                    <button class="back-btn" data-target="home-view"><i class="fas fa-arrow-left"></i></button>
+                    <h3>찬송가 선택</h3>
+                    <div style="width:24px;"></div>
+                </div>
+                <div class="selection-tabs" id="hymnRangeTabs" style="margin-bottom: 0;">
+                    <button class="selection-tab active" data-tab="list">목록</button>
+                    <button class="selection-tab" data-tab="numpad">번호 찾기</button>
+                </div>
+
+                <div id="hymnSearchArea" class="search-container" style="padding: 15px; max-width: none; margin: 0; background: #f8f9fa; border-bottom: 1px solid #ddd;">
+                    <div class="premium-search-bar" style="display: flex; gap: 8px; background: white; padding: 5px 12px; border-radius: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #eee;">
+                        <i class="fas fa-search" style="align-self: center; color: #999;"></i>
+                        <input type="text" id="hymnSearchInput" placeholder="제목이나 가사를 입력하세요" style="flex: 1; border: none; outline: none; padding: 8px; font-size: 1rem;">
+                        <button id="hymnSearchBtn" class="action-btn" style="background: none; border: none; color: #c08c40; font-weight: bold; cursor: pointer;">검색</button>
                     </div>
                 </div>
-                <div id="hymn-results" class="results-list hidden"></div>
+
+                <div id="hymnListWrapper" class="list-container">
+                    <div id="hymnRangeButtons" style="display: flex; overflow-x: auto; padding: 10px; gap: 10px; background: #fff; border-bottom: 1px solid #eee; scrollbar-width: none;">
+                        <button class="mini-range-btn active" data-range="1">1-100</button>
+                        <button class="mini-range-btn" data-range="101">101-200</button>
+                        <button class="mini-range-btn" data-range="201">201-300</button>
+                        <button class="mini-range-btn" data-range="301">301-400</button>
+                        <button class="mini-range-btn" data-range="401">401-500</button>
+                        <button class="mini-range-btn" data-range="501">501-645</button>
+                    </div>
+                    <div id="hymnList">
+                        <!-- Hymns will be rendered here -->
+                    </div>
+                </div>
+
+                <div id="hymnNumpadWrapper" class="hidden" style="padding: 20px; background: white; flex: 1; display: flex; flex-direction: column;">
+                    <div id="hymnNumDisplay" style="font-size: 3rem; font-weight: 800; text-align: center; margin-bottom: 20px; color: #c08c40; height: 1.2em;"></div>
+                    <div class="numpad" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; flex: 1;">
+                        <button class="num-btn" data-num="1">1</button>
+                        <button class="num-btn" data-num="2">2</button>
+                        <button class="num-btn" data-num="3">3</button>
+                        <button class="num-btn" data-num="4">4</button>
+                        <button class="num-btn" data-num="5">5</button>
+                        <button class="num-btn" data-num="6">6</button>
+                        <button class="num-btn" data-num="7">7</button>
+                        <button class="num-btn" data-num="8">8</button>
+                        <button class="num-btn" data-num="9">9</button>
+                        <button class="num-btn del" data-num="del"><i class="fas fa-backspace"></i></button>
+                        <button class="num-btn" data-num="0">0</button>
+                        <button class="num-btn go" id="hymnGoBtn" style="background: #c08c40; color: white;">이동</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 5. Hymn Reader View -->
+            <div id="hymn-reader-view" class="view-container classic-reader">
+                <div class="view-header reader-header" style="justify-content: space-between; padding-left: 20px; background: #0c1421;">
+                    <h3 id="hymn-title" class="back-btn" data-target="hymn-select-view" style="margin:0; text-align:left; cursor:pointer; color: var(--gold-primary);">제목</h3>
+                    <div class="hymn-actions">
+                        <button id="hymn-toggle-split" class="action-btn"><i class="fas fa-columns"></i></button>
+                    </div>
+                </div>
+                <div id="hymn-content" class="split-layout">
+                    <div id="hymn-score-view" class="hymn-score-view">
+                        <img id="hymn-score-img" src="" alt="악보">
+                    </div>
+                    <div id="hymn-lyrics-view" class="hymn-lyrics-view">
+                        <div id="hymn-lyrics-text"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 6. Story View -->
+            <div id="story-view" class="view-container">
+                <div class="view-header story-header">
+                    <button class="back-btn" data-target="home-view"><i class="fas fa-arrow-left"></i></button>
+                    <h3 style="margin:0; flex:1; text-align:center;">우리 이야기</h3>
+                    <button id="backupStoryBtn" style="background:none; border:none; font-size:1.2rem; color:#d4a373; cursor:pointer;" title="기록 백업하기"><i class="fas fa-download"></i></button>
+                </div>
+                
+                <div style="text-align:center; padding: 10px; background: #fffcf8; font-size: 0.9rem; border-bottom: 1px solid #f0e6da; color: #4a4036;">
+                    기록자: <select id="currentUserSelect" style="border:none; background:transparent; font-weight:bold; color:#d4a373; font-size: 1rem;"><option>남편</option><option>아내</option></select>
+                </div>
+                
+                <div id="storyTimeline" class="story-timeline">
+                    <!-- Stories will be injected here -->
+                </div>
+                
+                <button class="fab-btn" id="openStoryModalBtn"><i class="fas fa-pen"></i></button>
             </div>
         </main>
 
-        <!-- Bottom Tab Bar -->
-        <nav class="bottom-tab-bar">
-            <button class="tab-item active" data-view="bible">
-                <i class="fas fa-book-open"></i>
-                <span>성경</span>
-            </button>
-            <button class="tab-item" data-view="hymn">
-                <i class="fas fa-music"></i>
-                <span>찬송가</span>
-            </button>
-        </nav>
+        <!-- Story Write Modal -->
+        <div id="storyModal" class="modal">
+            <div class="modal-content story-modal-content">
+                <h3 style="margin:0; text-align:center; color:#5c4d3c;">새로운 기록</h3>
+                
+                <select id="storyType" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                    <option value="word">말씀 묵상 (Word)</option>
+                    <option value="gratitude">감사 일기 (Gratitude)</option>
+                    <option value="prayer">기도 카드 (Prayer)</option>
+                    <option value="song">우리의 찬양 (Song)</option>
+                </select>
+                
+                <div id="storyReferenceContainer" style="display:none;">
+                    <input type="text" id="storyReference" placeholder="유튜브 링크 / 관련 텍스트" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
+                </div>
+                
+                <textarea id="storyContent" placeholder="여기에 이야기, 묵상, 감사한 내용 등을 적어주세요." style="width: 100%; height: 100px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; resize: none; box-sizing: border-box;"></textarea>
+                
+                <div id="storyMediaContainer" style="display:none;">
+                    <label style="font-size: 0.85rem; color:#666; margin-bottom: 5px; display:block;">사진 첨부</label>
+                    <input type="file" id="storyMediaInput" accept="image/*">
+                </div>
+
+                <div class="story-modal-actions" style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn-cancel" id="cancelStoryBtn" style="flex:1; padding: 12px; border: none; border-radius: 8px; background: #f1f3f5; color: #495057; font-weight: bold; cursor: pointer;">취소</button>
+                    <button class="btn-submit" id="submitStoryBtn" style="flex:1; padding: 12px; border: none; border-radius: 8px; background: #d4a373; color: white; font-weight: bold; cursor: pointer;">기록하기</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Search Results Modal -->
         <div id="searchModal" class="modal">
@@ -138,6 +216,32 @@
                 <div id="bookmarkResults" class="results-list"></div>
             </div>
         </div>
+        <!-- Verse Card Modal -->
+        <div id="verseCardModal" class="modal">
+            <div class="modal-content verse-card-creator">
+                <div class="modal-header">
+                    <h3>말씀 카드 만들기</h3>
+                    <span class="close">&times;</span>
+                </div>
+                <div id="verseCardPreview" class="verse-card-preview">
+                    <div class="card-content">
+                        <p id="previewVerseText"></p>
+                        <span id="previewVerseLocation"></span>
+                    </div>
+                </div>
+                <div class="card-controls">
+                    <div class="color-presets">
+                        <button class="color-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></button>
+                        <button class="color-btn" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);"></button>
+                        <button class="color-btn" style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);"></button>
+                        <button class="color-btn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></button>
+                        <button class="color-btn" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></button>
+                    </div>
+                    <button id="saveCardBtn" class="premium-btn">이미지로 저장</button>
+                    <button id="shareCardBtn" class="premium-btn secondary">공유하기</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- PWA Service Worker -->
@@ -148,6 +252,8 @@
             });
         }
     </script>
-    <script src="/static/app.js?v=9"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="/static/story_logic.js"></script>
+    <script src="/static/app.js?v=12"></script>
 </body>
 </html>
