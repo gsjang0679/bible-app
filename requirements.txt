@@ -1,6 +1,8 @@
 
 fastapi
-uvicorn
+uvicorn[standard]
 jinja2
 python-multipart
-a2wsgi
+aiofiles
+gunicorn
+
