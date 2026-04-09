@@ -8,6 +8,7 @@ import os
 
 app = FastAPI()
 
+# DEPLOY_VERSION: v13 (Forced Update for Render)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "bible.db")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
